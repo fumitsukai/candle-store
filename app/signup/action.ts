@@ -1,3 +1,4 @@
+"use server"
 import { signupSchema, FormState } from "@/lib/types"
 import { createClient } from "@/utils/supabase/server"
 import { revalidatePath } from "next/cache"
@@ -14,7 +15,16 @@ export async function signup(state:FormState, formData: FormData):Promise<FormSt
 
     const data = result.data
   
-    const { error } = await supabase.auth.signUp(data)
+    const {  error } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options : {
+            data: {
+                firstName: data.firstName,
+                lastName:data.lastName
+            }
+        }
+    })
   
     if (error) {
         return {
