@@ -10,6 +10,19 @@ export type FormState =
     }
   | undefined;
 
+export type ProductProps = {
+  id: number;
+  name: string;
+  description: string;
+  thumbnail: string;
+  price: number;
+  created_at: string;
+  stock: number;
+  category: string;
+  tags: string[];
+  pictures: string[];
+};
+
 export const loginSchema = z.object({
   email: z
     .string()
@@ -62,4 +75,8 @@ export const createProductSchema = z.object({
     .string()
     .min(1, { message: "Must be more than 1 character long" })
     .trim(),
+});
+
+export const editProductSchema = createProductSchema.extend({
+  thumbnail: imageSchema.optional(),
 });
