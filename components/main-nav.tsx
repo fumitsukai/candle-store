@@ -5,13 +5,19 @@ import { Drawer, DrawerTrigger, DrawerContent, DrawerClose } from "./ui/drawer";
 import { Menu, UserRound, ShoppingCart, Heart } from "lucide-react";
 import Image from "next/image";
 import Logo from "@/public/img/Untitled.png";
+import { useEffect, useState } from "react";
 
 export default function MainNav() {
+  const [qty, setQty] = useState(0);
   const isDesktop = useMediaQuery("(min-width:768px");
+  useEffect(() => {
+    const prdt = JSON.parse(localStorage.getItem("products") as string);
+    setQty(prdt?.length as number);
+  }, []);
   return isDesktop ? (
     <div>DESKTOP</div>
   ) : (
-    <div className="flex items-center h-12 py-2 justify-between sticky top-0 bg-white px-3 z-50">
+    <div className="flex items-center h-12 py-2 justify-between sticky top-0 bg-white px-3 z-50 overflow-hidden">
       <Drawer direction="left">
         <DrawerTrigger>
           <Menu className="dark:text-linen text-raisinBlack" />
@@ -34,9 +40,16 @@ export default function MainNav() {
         <button>
           <Heart />
         </button>
-        <button>
-          <ShoppingCart />
-        </button>
+        <Link href="/cart">
+          <div className="relative">
+            {qty > 0 && (
+              <div className="absolute text-[10px] text-white bg-red-600 rounded-full px-1 right-0">
+                {qty}
+              </div>
+            )}
+            <ShoppingCart />
+          </div>
+        </Link>
       </div>
     </div>
   );

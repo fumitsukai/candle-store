@@ -21,6 +21,7 @@ export type ProductProps = {
   category: string;
   tags: string[];
   pictures: string[];
+  qty?: number;
 };
 
 export const loginSchema = z.object({

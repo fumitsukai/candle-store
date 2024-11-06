@@ -8,7 +8,7 @@ import {
 } from "./ui/card";
 import { ProductProps } from "@/lib/types";
 import Image from "next/image";
-import { Button } from "./ui/button";
+import Link from "next/link";
 
 export default function ProductCard({
   id,
@@ -18,22 +18,21 @@ export default function ProductCard({
   price,
 }: ProductProps) {
   return (
-    <Card className="overflow-hidden flex flex-col shrink-0">
-      <div className="w-full relative h-auto aspect-square">
-        <Image src={thumbnail} alt={name} fill />
-      </div>
-      <CardHeader>
-        <CardTitle>{name}</CardTitle>
-        <CardDescription>
-          {Intl.NumberFormat("en-GB", {
-            style: "currency",
-            currency: "GBP",
-          }).format(price / 100)}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="flex-grow">
-        <p>{description}</p>
-      </CardContent>
-    </Card>
+    <Link href={`${id}/${name}`}>
+      <Card className="overflow-hidden flex flex-col shrink-0">
+        <div className="w-full relative h-auto aspect-square">
+          <Image src={thumbnail} alt={name} fill />
+        </div>
+        <CardHeader>
+          <CardTitle className="text-base">{name}</CardTitle>
+          <CardDescription>
+            {Intl.NumberFormat("en-GB", {
+              style: "currency",
+              currency: "GBP",
+            }).format(price / 100)}
+          </CardDescription>
+        </CardHeader>
+      </Card>
+    </Link>
   );
 }
