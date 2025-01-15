@@ -14,14 +14,29 @@ export default async function Orders() {
     return <h1>No orders found</h1>;
   }
 
-  // Fetch products for each order individually to avoid duplication
+  // Fetch products with quantities for each order individually
   const ordersWithProducts = await Promise.all(
     orders.map(async (order) => {
-      const productIds = JSON.parse(order.products).map(
+      const productDetails = JSON.parse(order.products).map(
+        (product: { id: number; qty: number }) => ({
+          id: product.id,
+          qty: product.qty,
+        })
+      );
+      const productIds = productDetails.map(
         (product: ProductProps) => product.id
       );
       const products = await getProductsByIds(productIds);
-      return { ...order, products };
+
+      // Combine products with quantities
+      const productsWithQty = products.map((product) => ({
+        ...product,
+        qty:
+          productDetails.find((p: ProductProps) => p.id === product.id)?.qty ||
+          1, // Default to 1 if qty is missing
+      }));
+
+      return { ...order, products: productsWithQty };
     })
   );
 
@@ -32,7 +47,10 @@ export default async function Orders() {
           <h1>Order ID: {order.id}</h1>
           <div>
             {order.products.map((product: ProductProps) => (
-              <ProductCard key={product.id} {...product} />
+              <div key={product.id}>
+                <ProductCard {...product} />
+                <p>Quantity: {product.qty}</p>
+              </div>
             ))}
           </div>
         </div>

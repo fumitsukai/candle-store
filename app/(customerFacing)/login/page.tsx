@@ -11,7 +11,7 @@ export default function Login() {
   const [error, dispatch] = useFormState(login, {});
   return (
     <form
-      className="flex flex-col mx-10 mt-24 border shadow-md p-5 space-y-2 rounded-md"
+      className="flex flex-col mx-2 mt-4 border shadow-md p-5 space-y-2 rounded-md"
       action={dispatch}
     >
       <div>
@@ -26,8 +26,13 @@ export default function Login() {
       </div>
       <div>{error && <p>{error.message}</p>}</div>
       <Button type="submit">Login</Button>
-      <div className="border-t space-x-2">
-        Don't have an account?<Link href="/signup">Create one</Link>
+      <div className="border-t">
+        <div className="flex">
+          <p>Don't have an account?</p>
+          <Link href="/signup">
+            <span className="decoration-slate-900">Create one</span>
+          </Link>
+        </div>
       </div>
     </form>
   );

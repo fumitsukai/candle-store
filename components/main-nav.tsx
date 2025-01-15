@@ -2,14 +2,31 @@
 import Link from "next/link";
 import { useMediaQuery } from "../hooks/use-media-query";
 import { Drawer, DrawerTrigger, DrawerContent, DrawerClose } from "./ui/drawer";
-import { Menu, UserRound, ShoppingCart, Heart } from "lucide-react";
+import { AlignJustify, UserRound, ShoppingBag, Heart } from "lucide-react";
 import Image from "next/image";
 import Logo from "@/public/img/Untitled.png";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { createClient } from "@/utils/supabase/client";
+import { SessionContext } from "@/app/(customerFacing)/layout";
 
 export default function MainNav() {
+  const supabase = createClient();
+  const user = useContext(SessionContext);
+
+  const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Error signing out:", error.message);
+    }
+  };
   const [qty, setQty] = useState(0);
-  const isDesktop = useMediaQuery("(min-width:768px");
+  const isDesktop = useMediaQuery("min-width:768px");
   useEffect(() => {
     const prdt = JSON.parse(localStorage.getItem("products") as string);
     setQty(prdt?.length as number);
@@ -17,12 +34,15 @@ export default function MainNav() {
   return isDesktop ? (
     <div>DESKTOP</div>
   ) : (
-    <div className="flex items-center h-12 py-2 justify-between sticky top-0 bg-white px-3 z-50 overflow-hidden">
+    <div className="flex items-center h-10 py-6 justify-between sticky top-0 bg-white px-3 z-50 overflow-hidden">
       <Drawer direction="left">
-        <DrawerTrigger>
-          <Menu className="dark:text-linen text-raisinBlack" />
+        <DrawerTrigger className="p-1">
+          <AlignJustify
+            className="dark:text-linen text-raisinBlack"
+            size={20}
+          />
         </DrawerTrigger>
-        <DrawerContent>
+        <DrawerContent className="text-center">
           <DrawerClose asChild>
             <Link href="/products">
               <button className="font-semibold text-xl mb-3">CANDLES</button>
@@ -30,24 +50,40 @@ export default function MainNav() {
           </DrawerClose>
         </DrawerContent>
       </Drawer>
-      <Link href="/" className="ps-12 mt-1 justify-self-start">
-        <Image src={Logo} alt="Logo"></Image>
+      <Link href="/" className="ps-14 justify-self-start">
+        <Image src={Logo} alt="Logo" width={130} height={50}></Image>
       </Link>
-      <div className="flex float-end gap-6">
-        <Link href="/login">
-          <UserRound />
-        </Link>
-        <button>
-          <Heart />
+      <div className="flex float-end gap-3">
+        <DropdownMenu>
+          <DropdownMenuTrigger className="p-1">
+            <UserRound size={20} />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            {!user ? (
+              <Link href="/login">
+                <DropdownMenuItem>Sign In</DropdownMenuItem>
+              </Link>
+            ) : (
+              <DropdownMenuItem onClick={handleSignOut}>
+                Sign Out
+              </DropdownMenuItem>
+            )}
+            <Link href="/view-profile">
+              <DropdownMenuItem>View Profile</DropdownMenuItem>
+            </Link>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <button className="p-1">
+          <Heart size={20} />
         </button>
         <Link href="/cart">
-          <div className="relative">
+          <div className="relative p-1">
             {qty > 0 && (
-              <div className="absolute text-[10px] text-white bg-red-600 rounded-full px-1 right-0">
+              <div className="absolute text-[8px] text-white bg-slate-900 rounded-full px-1 right-0 bottom-0">
                 {qty}
               </div>
             )}
-            <ShoppingCart />
+            <ShoppingBag size={20} />
           </div>
         </Link>
       </div>
