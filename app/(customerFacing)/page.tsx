@@ -1,5 +1,6 @@
 import Hero from "@/components/hero";
 import ProductCard from "@/components/product-card";
+import WhyUs from "@/components/why-us";
 import { ProductProps } from "@/lib/types";
 import { createClient } from "@/utils/supabase/server";
 
@@ -37,6 +38,7 @@ export default async function Home() {
       <div>
         <ProductGrid productFetcher={getBestsellers} title="Bestsellers" />
       </div>
+      <WhyUs />
     </>
   );
 }
