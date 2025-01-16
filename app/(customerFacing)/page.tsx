@@ -10,6 +10,20 @@ async function getNewIn() {
     .select()
     .order("created_at")
     .limit(6);
+  if (error) console.log("Error fetching data", error);
+  return data;
+}
+
+async function getBestsellers() {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("products")
+    .select()
+    .order("qty_sold")
+    .limit(10);
+  if (error) {
+    console.log(error);
+  }
   return data;
 }
 
@@ -17,8 +31,11 @@ export default async function Home() {
   return (
     <>
       <Hero />
-      <div className="mx-1">
+      <div>
         <ProductGrid productFetcher={getNewIn} title="New In" />
+      </div>
+      <div>
+        <ProductGrid productFetcher={getBestsellers} title="Bestsellers" />
       </div>
     </>
   );
