@@ -22,7 +22,6 @@ export default function Layout({
         return;
       }
       if (data?.session) {
-        console.log("Synchronized session:", data.session);
         setUser(data.session.user);
       }
     } catch (error) {
@@ -36,8 +35,6 @@ export default function Layout({
       const authRedirect = urlParams.get("auth_redirect");
 
       if (authRedirect) {
-        console.log("Auth redirect detected, syncing session...");
-
         // Fetch the updated session
         await syncSession();
 
@@ -62,7 +59,6 @@ export default function Layout({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state change:", event);
       if (event === "SIGNED_OUT") {
         setUser(null);
       } else if (session) {

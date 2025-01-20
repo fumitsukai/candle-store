@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.loader-hidden {
+  display: none;
+}
+.loader-active {
+  display: block;
+}
