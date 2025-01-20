@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { BouncyBallsLoader } from "react-loaders-kit";
+import BouncyBallsLoader from "react-loaders-kit/lib/bouncyBalls/BouncyBallsLoader";
 
 type Product = {
   id: number;
@@ -23,7 +23,6 @@ export default function Cart() {
   const [ls, setLs] = useState<Product[]>([]);
   const [data, setData] = useState<ProductProps[] | any[]>([]);
   const [checkoutTotal, setCheckoutTotal] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState<Boolean>(false);
   useEffect(() => {
     const products = localStorage.getItem("products");
     if (products) {
@@ -39,12 +38,7 @@ export default function Cart() {
   useEffect(() => {
     let isMounted = true;
     async function fetchData() {
-      console.log("set isloading to true");
-      if (isMounted) setIsLoading(true);
-      const start = Date.now();
-
       try {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
         console.log("Fetching data");
         const results = await Promise.all(
           ls.map((item) =>
@@ -63,15 +57,6 @@ export default function Cart() {
         if (isMounted) setCheckoutTotal(totalCost);
       } catch (error) {
         console.log("Error fetching data", error);
-      } finally {
-        const duration = Date.now() - start; // Calculate elapsed time
-        const remainingTime = Math.max(0, 1000 - duration); // Ensure 1-second minimum
-        setTimeout(() => {
-          if (isMounted) {
-            console.log("Setting isLoading to false...");
-            setIsLoading(false);
-          }
-        }, remainingTime);
       }
     }
     if (ls.length > 0) {
@@ -85,14 +70,6 @@ export default function Cart() {
   return (
     <div className="space-y-2">
       <Checkout checkoutTotal={checkoutTotal} />
-      {isLoading && (
-        <div className="w-full flex justify-center justify-items-center">
-          <BouncyBallsLoader
-            loading
-            colors={["#21A0A0", "#21A0A0", "#21A0A0"]}
-          />
-        </div>
-      )}
       {data.map((item, index) => (
         <CartCard key={index} {...item} qty={item.qty} />
       ))}
