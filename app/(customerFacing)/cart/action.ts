@@ -2,9 +2,12 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 
-export async function getLocalStorage(id: number) {
+export async function getProducts(id: number) {
   const supabase = createClient();
   const { data, error } = await supabase.from("products").select().eq("id", id);
+  if (error) {
+    console.log(error);
+  }
   return data;
 }
 

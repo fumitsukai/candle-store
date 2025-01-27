@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { checkout, getLocalStorage } from "./action";
+import { checkout, getProducts } from "./action";
 import { ProductProps } from "@/lib/types";
 import {
   Card,
@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/card";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import BouncyBallsLoader from "react-loaders-kit/lib/bouncyBalls/BouncyBallsLoader";
 
 type Product = {
   id: number;
@@ -42,7 +41,7 @@ export default function Cart() {
         console.log("Fetching data");
         const results = await Promise.all(
           ls.map((item) =>
-            getLocalStorage(item.id).then((products) =>
+            getProducts(item.id).then((products) =>
               products?.map((product) => ({ ...product, qty: item.qty }))
             )
           )
