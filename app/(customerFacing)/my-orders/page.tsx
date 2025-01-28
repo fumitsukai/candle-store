@@ -1,5 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { getProducts } from "../cart/action";
+import { OrderProps, ProductProps } from "@/lib/types";
+import Link from "next/link";
 
 export default async function MyOrders() {
   const supabase = createClient();
@@ -17,31 +19,14 @@ export default async function MyOrders() {
     })
   );
 
-  ordersWithProducts.map((order) =>
-    order.detailedProducts.map((product) => console.log(product.id))
-  );
-
   return (
-    <div>
+    <div className="space-y-2">
+      <h1>My Orders</h1>
       {!ordersWithProducts || ordersWithProducts.length === 0 ? (
         <p>No orders found</p>
       ) : (
-        ordersWithProducts.map((order) => (
-          <div key={order.id} className="order">
-            <h2>Order ID: {order.id}</h2>
-            <h3>Products:</h3>
-            {order.detailedProducts && order.detailedProducts.length > 0 ? (
-              <ul>
-                {order.detailedProducts.flat().map((product: any) => (
-                  <li key={product.id}>
-                    <strong>{product.name}</strong> - {product.quantity} pcs
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No products found in this order</p>
-            )}
-          </div>
+        ordersWithProducts.map((order, index) => (
+          <OrderCard key={index} {...order} />
         ))
       )}
     </div>
@@ -66,16 +51,28 @@ async function getOrders(id: string) {
   }));
 }
 
-function OrderThumbnail({
-  thumbnail,
-  description,
-}: {
-  thumbnail: string;
-  description: string;
-}) {
+function OrderCard(props: OrderProps) {
+  var date = new Date(props.created_at);
   return (
-    <div>
-      <img src={thumbnail} alt={description} />
-    </div>
+    <>
+      <div className="space-y-2 bg-slate-100 p-1">
+        <div>Delivery Status: {props.status}</div>
+        <div className="text-sm">Track Parcel</div>
+        <div className="flex gap-1">
+          {props.detailedProducts.flat().map((product: ProductProps) => (
+            <div key={product.id} className="w-24 h-24 bg-slate-600">
+              <Link href={`${product.id}/${product.name}`}>
+                {" "}
+                <img src={product.thumbnail} alt={product.name} />{" "}
+              </Link>
+            </div>
+          ))}
+        </div>
+        <div className="text-sm font-thin space-y-1">
+          <div>Order Id: {props.id}</div>
+          <div>Created At: {date.toLocaleDateString()}</div>
+        </div>
+      </div>
+    </>
   );
 }

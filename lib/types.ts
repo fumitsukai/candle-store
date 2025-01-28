@@ -1,3 +1,4 @@
+import { LargeNumberLike } from "crypto";
 import { z } from "zod";
 
 export type FormState =
@@ -22,6 +23,17 @@ export type ProductProps = {
   tags: string[];
   pictures: string[];
   qty?: number;
+};
+
+export type OrderProps = {
+  id: string;
+  created_at: string;
+  products: JSON;
+  total: number;
+  user_id: string;
+  qty: number;
+  status: string;
+  detailedProducts?: any;
 };
 
 export const loginSchema = z.object({
