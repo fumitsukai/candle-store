@@ -7,6 +7,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useCart } from "@/contexts/CartContext";
 import { ProductProps } from "@/lib/types";
 import { createClient } from "@/utils/supabase/client";
 import Image from "next/image";
@@ -22,6 +23,7 @@ export function ProductInfo({
   const [qty, setQty] = useState(1);
   const [userId, setUserId] = useState<string | null>(null);
   const supabase = createClient();
+  const { fetchCartQty } = useCart();
 
   useEffect(() => {
     async function getOrCreateUser() {
@@ -94,6 +96,7 @@ export function ProductInfo({
     }
 
     alert("Added to cart!");
+    fetchCartQty();
   }
   return (
     <div>
