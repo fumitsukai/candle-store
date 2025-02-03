@@ -3,6 +3,7 @@ import Footer from "@/components/footer";
 import MainNav from "@/components/main-nav";
 import { createClient } from "@/utils/supabase/client";
 import { useState, createContext, useEffect } from "react";
+import { CartProvider } from "@/contexts/CartContext";
 
 export const SessionContext = createContext(null);
 
@@ -73,11 +74,13 @@ export default function Layout({
 
   return (
     <SessionContext.Provider value={user}>
-      <div className="flex flex-col min-h-screen">
-        <MainNav />
-        <div className="space-y-2 flex-1">{children}</div>
-        <Footer />
-      </div>
+      <CartProvider>
+        <div className="flex flex-col min-h-screen">
+          <MainNav />
+          <div className="space-y-2 flex-1">{children}</div>
+          <Footer />
+        </div>
+      </CartProvider>
     </SessionContext.Provider>
   );
 }
