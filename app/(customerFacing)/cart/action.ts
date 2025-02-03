@@ -12,14 +12,28 @@ export async function getProducts(id: number) {
 }
 
 export async function checkout(total: number, localStorageData: any) {
-  console.log(total, localStorageData);
   const supabase = createClient();
-  const { error } = await supabase
+  //start transaction
+  const { data: order, error: orderError } = await supabase
     .from("orders")
-    .insert([{ total: total, products: localStorageData }])
-    .select();
-  if (error) {
-    console.log(error);
+    .insert([{ total: total }])
+    .select("id")
+    .single();
+  if (orderError) {
+    throw orderError;
   }
+  const order_id = order.id;
+  //insert order items in bulk
+  const orderItems = JSON.parse(localStorageData).map((item: any) => ({
+    order_id,
+    product_id: item.id,
+    quantity: item.qty,
+    price: item.price,
+  }));
+  const { error: itemsError } = await supabase
+    .from("order_items")
+    .insert(orderItems);
+  if (itemsError) throw itemsError;
+  localStorage.clear();
   redirect("/");
 }

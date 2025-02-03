@@ -36,7 +36,7 @@ export function ProductInfo({
           }).format(price / 100)}
         </p>
         <div className="flex justify-between gap-2">
-          <Button className="w-full" onClick={() => addToCart(id, qty)}>
+          <Button className="w-full" onClick={() => addToCart(id, qty, price)}>
             Add to cart
           </Button>
           <DropdownMenu>
@@ -61,8 +61,8 @@ export function ProductInfo({
   );
 }
 
-function addToCart(id: number, qty: number = 1) {
-  const product = { id, qty };
+function addToCart(id: number, qty: number = 1, price: number) {
+  const product = { id, qty, price };
   let allProducts =
     JSON.parse(localStorage.getItem("products") as string) || [];
   const productIndex = allProducts.findIndex(

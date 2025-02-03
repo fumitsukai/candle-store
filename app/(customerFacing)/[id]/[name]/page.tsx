@@ -10,6 +10,7 @@ export default async function ViewProduct({
   const { data: product, error } = await supabase
     .from("products")
     .select()
-    .eq("id", id);
-  return <ProductInfo {...product![0]} key={id} />;
+    .eq("id", id)
+    .single();
+  return <ProductInfo {...product!} key={id} />;
 }

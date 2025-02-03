@@ -13,7 +13,6 @@ import Link from "next/link";
 export default function ProductCard({
   id,
   name,
-  description,
   thumbnail,
   price,
 }: ProductProps) {

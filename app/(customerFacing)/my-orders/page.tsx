@@ -2,6 +2,8 @@ import { createClient } from "@/utils/supabase/server";
 import { getProducts } from "../cart/action";
 import { OrderProps, ProductProps } from "@/lib/types";
 import Link from "next/link";
+import Header from "@/components/header";
+import { ArrowLeft } from "lucide-react";
 
 export default async function MyOrders() {
   const supabase = createClient();
@@ -20,15 +22,24 @@ export default async function MyOrders() {
   );
 
   return (
-    <div className="space-y-2">
-      <h1>My Orders</h1>
-      {!ordersWithProducts || ordersWithProducts.length === 0 ? (
-        <p>No orders found</p>
-      ) : (
-        ordersWithProducts.map((order, index) => (
-          <OrderCard key={index} {...order} />
-        ))
-      )}
+    <div className="h-dvh bg-slate-100">
+      <div className="flex items-center justify-between p-1 bg-white border-y">
+        <Link href="/view-profile">
+          <ArrowLeft />
+        </Link>
+        <Header name="MY ORDERS" />
+        <div className="w-5"></div>
+      </div>
+      <div className="text-sm p-1">{ordersWithProducts.length} orders</div>
+      <div className="space-y-2">
+        {!ordersWithProducts || ordersWithProducts.length === 0 ? (
+          <p>No orders found</p>
+        ) : (
+          ordersWithProducts.map((order, index) => (
+            <OrderCard key={index} {...order} />
+          ))
+        )}
+      </div>
     </div>
   );
 }
@@ -55,24 +66,23 @@ function OrderCard(props: OrderProps) {
   var date = new Date(props.created_at);
   return (
     <>
-      <div className="space-y-2 bg-slate-100 p-1">
-        <div>Delivery Status: {props.status}</div>
-        <div className="text-sm">Track Parcel</div>
-        <div className="flex gap-1">
-          {props.detailedProducts.flat().map((product: ProductProps) => (
-            <div key={product.id} className="w-24 h-24 bg-slate-600">
-              <Link href={`${product.id}/${product.name}`}>
-                {" "}
-                <img src={product.thumbnail} alt={product.name} />{" "}
-              </Link>
-            </div>
-          ))}
+      <Link href={`${props.id}/order-detail`}>
+        <div className="space-y-2 bg-white p-1">
+          <div>Delivery Status: {props.status}</div>
+          <div className="text-sm">Track Parcel</div>
+          <div className="flex gap-1">
+            {props.detailedProducts.flat().map((product: ProductProps) => (
+              <div key={product.id} className="w-24 h-24 bg-slate-600">
+                <img src={product.thumbnail} alt={product.name} />
+              </div>
+            ))}
+          </div>
+          <div className="text-sm font-thin space-y-1">
+            <div>Order Id: {props.id}</div>
+            <div>Created At: {date.toLocaleDateString()}</div>
+          </div>
         </div>
-        <div className="text-sm font-thin space-y-1">
-          <div>Order Id: {props.id}</div>
-          <div>Created At: {date.toLocaleDateString()}</div>
-        </div>
-      </div>
+      </Link>
     </>
   );
 }

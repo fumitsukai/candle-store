@@ -1,5 +1,5 @@
 import { LargeNumberLike } from "crypto";
-import { z } from "zod";
+import { StringValidation, z } from "zod";
 
 export type FormState =
   | {
@@ -23,6 +23,7 @@ export type ProductProps = {
   tags: string[];
   pictures: string[];
   qty?: number;
+  category_id?: number;
 };
 
 export type OrderProps = {
