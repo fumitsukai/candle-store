@@ -25,12 +25,29 @@ export default function MainNav() {
       console.error("Error signing out:", error.message);
     }
   };
-  const [qty, setQty] = useState(0);
+  const [qty, setQty] = useState<number>(0);
   const isDesktop = useMediaQuery("min-width:768px");
   useEffect(() => {
-    const prdt = JSON.parse(localStorage.getItem("products") as string);
-    setQty(prdt?.length as number);
-  }, []);
+    async function fetchCartQty() {
+      //get user_id
+      const { data: user, error: userError } = await supabase.auth.getUser();
+      if (userError || !user?.user) {
+        return;
+      }
+
+      const { data: cart, error: cartError } = await supabase
+        .from("cart")
+        .select("quantity")
+        .eq("user_id", user.user?.id);
+
+      if (cartError) {
+        console.error("Error fetching cart:", cartError.message);
+      }
+      const totalQty = cart?.reduce((acc, item) => acc + item.quantity, 0) || 0;
+      setQty(totalQty);
+    }
+    fetchCartQty();
+  }, [supabase]);
   return isDesktop ? (
     <div>DESKTOP</div>
   ) : (
