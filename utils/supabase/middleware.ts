@@ -48,10 +48,10 @@ export async function updateSession(request: NextRequest) {
   //   return NextResponse.redirect(url);
   // }
 
-  if (!user && request.nextUrl.pathname.startsWith("/cart")) {
-    const { error } = await supabase.auth.signInAnonymously();
-    if (error) throw error;
-  }
+  // if (!user && request.nextUrl.pathname.startsWith("/cart")) {
+  //   const { error } = await supabase.auth.signInAnonymously();
+  //   if (error) throw error;
+  // }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
   // creating a new response object with NextResponse.next() make sure to:

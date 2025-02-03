@@ -5,13 +5,12 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuRadioGroup,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ProductProps } from "@/lib/types";
+import { createClient } from "@/utils/supabase/client";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export function ProductInfo({
   id,
@@ -21,6 +20,81 @@ export function ProductInfo({
   price,
 }: ProductProps) {
   const [qty, setQty] = useState(1);
+  const [userId, setUserId] = useState<string | null>(null);
+  const supabase = createClient();
+
+  useEffect(() => {
+    async function getOrCreateUser() {
+      const { data: user, error } = await supabase.auth.getUser();
+
+      if (error || !user?.user) {
+        // No logged-in user, try to create an anonymous session
+        const { data: anonUser, error: anonError } =
+          await supabase.auth.signInAnonymously();
+
+        if (anonError) {
+          console.error("Anonymous sign-in failed:", anonError.message);
+          return;
+        }
+
+        setUserId(anonUser?.user?.id ?? null);
+      } else {
+        setUserId(user.user.id);
+      }
+    }
+
+    getOrCreateUser();
+  }, [supabase]);
+
+  async function addToCart() {
+    if (!userId) {
+      alert("Failed to retrieve user session.");
+      return;
+    }
+
+    // Check if the item already exists in the cart
+    const { data: existingCartItem, error: fetchError } = await supabase
+      .from("cart")
+      .select("id, quantity")
+      .eq("user_id", userId)
+      .eq("product_id", id)
+      .single();
+
+    if (fetchError && fetchError.code !== "PGRST116") {
+      console.error("Error fetching cart:", fetchError.message);
+      return;
+    }
+
+    if (existingCartItem) {
+      // Update quantity if item already exists
+      const { error: updateError } = await supabase
+        .from("cart")
+        .update({ quantity: existingCartItem.quantity + qty })
+        .eq("id", existingCartItem.id);
+
+      if (updateError) {
+        console.error("Error updating cart:", updateError.message);
+        return;
+      }
+    } else {
+      // Insert new cart item
+      const { error: insertError } = await supabase.from("cart").insert([
+        {
+          user_id: userId,
+          product_id: id,
+          quantity: qty,
+          price,
+        },
+      ]);
+
+      if (insertError) {
+        console.error("Error adding to cart:", insertError.message);
+        return;
+      }
+    }
+
+    alert("Added to cart!");
+  }
   return (
     <div>
       <div>
@@ -36,7 +110,7 @@ export function ProductInfo({
           }).format(price / 100)}
         </p>
         <div className="flex justify-between gap-2">
-          <Button className="w-full" onClick={() => addToCart(id, qty, price)}>
+          <Button className="w-full" onClick={addToCart}>
             Add to cart
           </Button>
           <DropdownMenu>
@@ -59,20 +133,4 @@ export function ProductInfo({
       </div>
     </div>
   );
-}
-
-function addToCart(id: number, qty: number = 1, price: number) {
-  const product = { id, qty, price };
-  let allProducts =
-    JSON.parse(localStorage.getItem("products") as string) || [];
-  const productIndex = allProducts.findIndex(
-    (item: { id: number }) => item.id === id
-  );
-  if (productIndex > -1) {
-    allProducts[productIndex].qty += qty;
-  } else {
-    allProducts.push(product);
-  }
-
-  localStorage.setItem("products", JSON.stringify(allProducts));
 }
