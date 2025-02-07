@@ -63,7 +63,7 @@ export default function Cart() {
             return null;
           }
 
-          return { ...product, qty: item.quantity };
+          return { ...product, qty: item.quantity, user_id: user.user.id };
         });
 
         const products = (await Promise.all(productPromises)).filter(Boolean);

@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
 
 export async function linkAnonymousCartToUser(
   anonymousUserId: string,
@@ -24,5 +25,5 @@ export async function linkAnonymousCartToUser(
     console.log("Migration succesful");
   }
 
-  console.log("✅ Anonymous cart linked to user account!");
+  redirect("/cart");
 }

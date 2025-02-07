@@ -22,7 +22,6 @@ export async function checkout(total: number, cartData: any) {
     .single();
   if (orderError) {
     redirect("/login");
-    throw orderError;
   }
   const order_id = order.id;
   //insert order items in bulk
@@ -36,5 +35,18 @@ export async function checkout(total: number, cartData: any) {
     .from("order_items")
     .insert(orderItems);
   if (itemsError) throw itemsError;
+  //get user_id
+  const user_id = cartData.map((item: any) => {
+    return item.user_id;
+  });
+
+  //delete cart
+  const { error: deleteError } = await supabase
+    .from("cart")
+    .delete()
+    .eq("user_id", user_id);
+  if (deleteError) {
+    console.log("Error deleting cart", deleteError);
+  }
   redirect("/");
 }
