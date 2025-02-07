@@ -1,4 +1,5 @@
 "use server";
+
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 
@@ -11,7 +12,7 @@ export async function getProducts(id: number) {
   return data;
 }
 
-export async function checkout(total: number, localStorageData: any) {
+export async function checkout(total: number, cartData: any) {
   const supabase = createClient();
   //start transaction
   const { data: order, error: orderError } = await supabase
@@ -20,11 +21,12 @@ export async function checkout(total: number, localStorageData: any) {
     .select("id")
     .single();
   if (orderError) {
+    redirect("/login");
     throw orderError;
   }
   const order_id = order.id;
   //insert order items in bulk
-  const orderItems = JSON.parse(localStorageData).map((item: any) => ({
+  const orderItems = cartData.map((item: any) => ({
     order_id,
     product_id: item.id,
     quantity: item.qty,
@@ -34,6 +36,5 @@ export async function checkout(total: number, localStorageData: any) {
     .from("order_items")
     .insert(orderItems);
   if (itemsError) throw itemsError;
-  localStorage.clear();
   redirect("/");
 }

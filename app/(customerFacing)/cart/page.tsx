@@ -5,70 +5,100 @@ import { checkout, getProducts } from "./action";
 import { ProductProps } from "@/lib/types";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-
-type Product = {
-  id: number;
-  qty: number;
-};
+import { createClient } from "@/utils/supabase/client";
+import { useCart } from "@/contexts/CartContext";
 
 export default function Cart() {
-  const [ls, setLs] = useState<Product[]>([]);
+  const supabase = createClient();
   const [data, setData] = useState<ProductProps[] | any[]>([]);
   const [checkoutTotal, setCheckoutTotal] = useState<number>(0);
-  useEffect(() => {
-    const products = localStorage.getItem("products");
-    if (products) {
-      const parsedProducts = JSON.parse(products).map((item: any) => ({
-        id: item.id,
-        qty: item.qty,
-      }));
-      setLs(parsedProducts);
-    } else {
-      console.log("No products in localStorage");
-    }
-  }, []);
+  const { fetchCartQty } = useCart();
+
   useEffect(() => {
     let isMounted = true;
-    async function fetchData() {
-      try {
-        console.log("Fetching data");
-        const results = await Promise.all(
-          ls.map((item) =>
-            getProducts(item.id).then((products) =>
-              products?.map((product) => ({ ...product, qty: item.qty }))
-            )
-          )
-        );
-        const flatResults = results.flat();
-        if (isMounted) setData(flatResults);
 
-        const totalCost = flatResults.reduce(
-          (acc, product) => acc + product.price * product.qty,
-          0
-        );
-        if (isMounted) setCheckoutTotal(totalCost);
+    async function fetchCart() {
+      try {
+        // Get authenticated user
+        const { data: user, error: userError } = await supabase.auth.getUser();
+        if (userError || !user?.user) return;
+
+        console.log("Fetching cart for user id", user.user.id);
+
+        // Fetch cart items from the database
+        const { data: cartItems, error: cartError } = await supabase
+          .from("cart")
+          .select("product_id, quantity")
+          .eq("user_id", user.user.id);
+
+        if (cartError) {
+          console.error("Error fetching cart:", cartError.message);
+          return;
+        } else {
+          console.log("Cart items", cartItems);
+        }
+
+        if (cartItems.length === 0) {
+          setData([]);
+          setCheckoutTotal(0);
+          return;
+        }
+
+        // Fetch product details for cart items
+        const productPromises = cartItems.map(async (item) => {
+          const { data: product, error: productError } = await supabase
+            .from("products")
+            .select("*")
+            .eq("id", item.product_id)
+            .single();
+
+          if (productError) {
+            console.error("Error fetching product:", productError.message);
+            return null;
+          }
+
+          return { ...product, qty: item.quantity };
+        });
+
+        const products = (await Promise.all(productPromises)).filter(Boolean);
+
+        if (isMounted) {
+          setData(products);
+          setCheckoutTotal(
+            products.reduce(
+              (acc, product) => acc + product.price * product.qty,
+              0
+            )
+          );
+        }
       } catch (error) {
-        console.log("Error fetching data", error);
+        console.error("Error fetching cart data", error);
       }
     }
-    if (ls.length > 0) {
-      fetchData();
-    }
+
+    fetchCart();
+
     return () => {
       isMounted = false;
     };
-  }, [ls]);
+  }, [supabase]);
+
+  async function handleCheckout() {
+    //pass cart data
+    await checkout(checkoutTotal, data);
+    //refresh cart
+    fetchCartQty();
+  }
 
   return (
     <div className="space-y-2">
-      <Checkout checkoutTotal={checkoutTotal} />
+      <Checkout checkoutTotal={checkoutTotal} onCheckout={handleCheckout} />
       {data.map((item, index) => (
         <CartCard key={index} {...item} qty={item.qty} />
       ))}
@@ -96,7 +126,13 @@ function CartCard({ name, thumbnail, price, qty }: ProductProps) {
   );
 }
 
-function Checkout({ checkoutTotal }: { checkoutTotal: number }) {
+function Checkout({
+  checkoutTotal,
+  onCheckout,
+}: {
+  checkoutTotal: number;
+  onCheckout: () => void;
+}) {
   return (
     <div className="flex justify-between items-center py-5 px-2 border m-1">
       <div className="flex gap-2">
@@ -108,13 +144,7 @@ function Checkout({ checkoutTotal }: { checkoutTotal: number }) {
           }).format(checkoutTotal / 100)}
         </p>
       </div>
-      <Button
-        onClick={(e) =>
-          checkout(checkoutTotal, localStorage.getItem("products"))
-        }
-      >
-        CHECKOUT
-      </Button>
+      <Button onClick={onCheckout}>CHECKOUT</Button>
     </div>
   );
 }
