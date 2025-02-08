@@ -16,32 +16,24 @@ export async function login(
 
   const { data: anonUser, error: anonError } = await supabase.auth.getUser();
 
-  if (anonError || !anonUser.user) {
-    console.log("Error fetching anonymous user:", anonError?.message);
-    return { message: "Error getting anonymous session" };
-  }
-
-  const anonymousUserId = anonUser.user.id;
+  const anonymousUserId = anonUser?.user?.id;
 
   const result = loginSchema.safeParse(Object.fromEntries(formData.entries()));
 
   if (!result.success) {
     return result.error.flatten().fieldErrors;
   }
-
   const data = result.data;
-  const { error: updateError } = await supabase.auth.updateUser(data);
-  if (updateError) {
-    const { data: user, error } = await supabase.auth.signInWithPassword(data);
+  const { data: user, error } = await supabase.auth.signInWithPassword(data);
 
-    if (error) {
-      return { message: "Invalid username or password" };
-    }
-
-    console.log("User ID:", user.user.id);
-
-    await linkAnonymousCartToUser(anonymousUserId, user.user.id);
-    // revalidatePath("/", "layout");
-    redirect("/?auth_redirect=true");
+  if (error) {
+    return { message: "Invalid username or password" };
   }
+
+  if (anonymousUserId) {
+    await linkAnonymousCartToUser(anonymousUserId, user.user.id);
+  }
+
+  // revalidatePath("/", "layout");
+  redirect("/?auth_redirect=true");
 }

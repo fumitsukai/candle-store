@@ -19,13 +19,15 @@ import { useCart } from "@/contexts/CartContext";
 export default function MainNav() {
   const supabase = createClient();
   const user = useContext(SessionContext);
-  const { qty } = useCart();
+  const { qty, fetchCartQty } = useCart();
 
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
+
     if (error) {
       console.error("Error signing out:", error.message);
     }
+    fetchCartQty();
   };
   const isDesktop = useMediaQuery("min-width:768px");
   return isDesktop ? (

@@ -21,38 +21,41 @@ export function ProductInfo({
   price,
 }: ProductProps) {
   const [qty, setQty] = useState(1);
-  const [userId, setUserId] = useState<string | null>(null);
+  // const [userId, setUserId] = useState<string | null>(null);
   const supabase = createClient();
   const { fetchCartQty } = useCart();
 
-  useEffect(() => {
-    async function getOrCreateUser() {
-      const { data: user, error } = await supabase.auth.getUser();
+  // useEffect(() => {
+  //   async function getOrCreateUser() {
+  //     const { data: user, error } = await supabase.auth.getUser();
 
-      if (error || !user?.user) {
-        // No logged-in user, try to create an anonymous session
-        const { data: anonUser, error: anonError } =
-          await supabase.auth.signInAnonymously();
+  //     if (error || !user?.user) {
+  //       // No logged-in user, try to create an anonymous session
+  //       const { data: anonUser, error: anonError } =
+  //         await supabase.auth.signInAnonymously();
 
-        if (anonError) {
-          console.error("Anonymous sign-in failed:", anonError.message);
-          return;
-        }
+  //       if (anonError) {
+  //         console.error("Anonymous sign-in failed:", anonError.message);
+  //         return;
+  //       }
 
-        setUserId(anonUser?.user?.id ?? null);
-      } else {
-        setUserId(user.user.id);
-      }
-    }
+  //       setUserId(anonUser?.user?.id ?? null);
+  //     } else {
+  //       setUserId(user.user.id);
+  //     }
+  //   }
 
-    getOrCreateUser();
-  }, [supabase]);
+  //   getOrCreateUser();
+  // }, [supabase]);
 
   async function addToCart() {
-    if (!userId) {
-      alert("Failed to retrieve user session.");
-      return;
+    const { data: user, error: userError } = await supabase.auth.getUser();
+
+    if (userError) {
+      console.log("Failed to retrieve session:", userError);
     }
+
+    const userId = user?.user?.id;
 
     // Check if the item already exists in the cart
     const { data: existingCartItem, error: fetchError } = await supabase
