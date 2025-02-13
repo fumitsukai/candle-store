@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { checkout, getProducts } from "./action";
 import { ProductProps } from "@/lib/types";
 import {
   Card,
@@ -13,6 +12,8 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
 import { useCart } from "@/contexts/CartContext";
+import Link from "next/link";
+import { fetchCart } from "../_helpers/fetchCart";
 
 export default function Cart() {
   const supabase = createClient();
@@ -23,82 +24,38 @@ export default function Cart() {
   useEffect(() => {
     let isMounted = true;
 
-    async function fetchCart() {
-      try {
-        // Get authenticated user
-        const { data: user, error: userError } = await supabase.auth.getUser();
-        if (userError || !user?.user) return;
+    async function getCartData() {
+      // Get authenticated user
+      const { data: user, error: userError } = await supabase.auth.getUser();
+      if (userError || !user?.user) return;
 
-        console.log("Fetching cart for user id", user.user.id);
+      console.log("Fetching cart for user id", user.user.id);
 
-        // Fetch cart items from the database
-        const { data: cartItems, error: cartError } = await supabase
-          .from("cart")
-          .select("product_id, quantity")
-          .eq("user_id", user.user.id);
+      // Fetch cart items from the database
+      const { items, error } = await fetchCart(supabase, user.user.id);
+      if (error) {
+        console.log("Failed fetching cart items:", error);
+        return;
+      }
 
-        if (cartError) {
-          console.error("Error fetching cart:", cartError.message);
-          return;
-        } else {
-          console.log("Cart items", cartItems);
-        }
-
-        if (cartItems.length === 0) {
-          setData([]);
-          setCheckoutTotal(0);
-          return;
-        }
-
-        // Fetch product details for cart items
-        const productPromises = cartItems.map(async (item) => {
-          const { data: product, error: productError } = await supabase
-            .from("products")
-            .select("*")
-            .eq("id", item.product_id)
-            .single();
-
-          if (productError) {
-            console.error("Error fetching product:", productError.message);
-            return null;
-          }
-
-          return { ...product, qty: item.quantity, user_id: user.user.id };
-        });
-
-        const products = (await Promise.all(productPromises)).filter(Boolean);
-
-        if (isMounted) {
-          setData(products);
-          setCheckoutTotal(
-            products.reduce(
-              (acc, product) => acc + product.price * product.qty,
-              0
-            )
-          );
-        }
-      } catch (error) {
-        console.error("Error fetching cart data", error);
+      if (isMounted) {
+        setData(items);
+        setCheckoutTotal(
+          items.reduce((acc, product) => acc + product.price * product.qty, 0)
+        );
       }
     }
 
-    fetchCart();
+    getCartData();
 
     return () => {
       isMounted = false;
     };
   }, [supabase]);
 
-  async function handleCheckout() {
-    //pass cart data
-    await checkout(checkoutTotal, data);
-    //refresh cart
-    fetchCartQty();
-  }
-
   return (
     <div className="space-y-2">
-      <Checkout checkoutTotal={checkoutTotal} onCheckout={handleCheckout} />
+      <Checkout checkoutTotal={checkoutTotal} />
       {data.map((item, index) => (
         <CartCard key={index} {...item} qty={item.qty} />
       ))}
@@ -126,13 +83,7 @@ function CartCard({ name, thumbnail, price, qty }: ProductProps) {
   );
 }
 
-function Checkout({
-  checkoutTotal,
-  onCheckout,
-}: {
-  checkoutTotal: number;
-  onCheckout: () => void;
-}) {
+function Checkout({ checkoutTotal }: { checkoutTotal: number }) {
   return (
     <div className="flex justify-between items-center py-5 px-2 border m-1">
       <div className="flex gap-2">
@@ -144,7 +95,9 @@ function Checkout({
           }).format(checkoutTotal / 100)}
         </p>
       </div>
-      <Button onClick={onCheckout}>CHECKOUT</Button>
+      <Link href="/checkout">
+        <Button>CHECKOUT</Button>
+      </Link>
     </div>
   );
 }

@@ -26,6 +26,14 @@ export type ProductProps = {
   category_id?: number;
 };
 
+export type CartProps = {
+  id: string;
+  user_id: string;
+  product_id: number;
+  quantity: number;
+  price: number;
+};
+
 export type OrderProps = {
   id: string;
   created_at: string;
