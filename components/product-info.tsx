@@ -25,29 +25,6 @@ export function ProductInfo({
   const supabase = createClient();
   const { fetchCartQty } = useCart();
 
-  // useEffect(() => {
-  //   async function getOrCreateUser() {
-  //     const { data: user, error } = await supabase.auth.getUser();
-
-  //     if (error || !user?.user) {
-  //       // No logged-in user, try to create an anonymous session
-  //       const { data: anonUser, error: anonError } =
-  //         await supabase.auth.signInAnonymously();
-
-  //       if (anonError) {
-  //         console.error("Anonymous sign-in failed:", anonError.message);
-  //         return;
-  //       }
-
-  //       setUserId(anonUser?.user?.id ?? null);
-  //     } else {
-  //       setUserId(user.user.id);
-  //     }
-  //   }
-
-  //   getOrCreateUser();
-  // }, [supabase]);
-
   async function addToCart() {
     const { data: user, error: userError } = await supabase.auth.getUser();
 

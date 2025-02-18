@@ -6,7 +6,6 @@ import { login } from "./action";
 import { useFormState } from "react-dom";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { linkAnonymousCartToUser } from "../_helpers/linkAnonCartToUser";
 
 export default function Login() {
   const [error, dispatch] = useFormState(login, {});

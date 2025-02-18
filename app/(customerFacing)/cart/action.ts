@@ -12,7 +12,7 @@ export async function getProducts(id: number) {
   return data;
 }
 
-export async function checkout(total: number, cartData: any) {
+export async function addToOrders(total: number, cartData: any) {
   const supabase = createClient();
   //start transaction
   const { data: order, error: orderError } = await supabase
@@ -39,14 +39,4 @@ export async function checkout(total: number, cartData: any) {
   const user_id = cartData.map((item: any) => {
     return item.user_id;
   });
-
-  //delete cart
-  const { error: deleteError } = await supabase
-    .from("cart")
-    .delete()
-    .eq("user_id", user_id);
-  if (deleteError) {
-    console.log("Error deleting cart", deleteError);
-  }
-  redirect("/");
 }

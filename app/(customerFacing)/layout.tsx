@@ -75,7 +75,7 @@ export default function Layout({
   return (
     <SessionContext.Provider value={user}>
       <CartProvider>
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col min-h-screen text-sm">
           <MainNav />
           <div className="space-y-2 flex-1">{children}</div>
           <Footer />

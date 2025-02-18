@@ -78,7 +78,7 @@ export default function MainNav() {
         <Link href="/cart">
           <div className="relative p-1">
             {qty > 0 && (
-              <div className="absolute text-[8px] text-white bg-slate-900 rounded-full px-1 right-0 bottom-0">
+              <div className="absolute text-[8px] w-3 h-3 text-white bg-slate-900 rounded-full items-center right-0 bottom-0 flex justify-center">
                 {qty}
               </div>
             )}

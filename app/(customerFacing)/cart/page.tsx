@@ -14,6 +14,7 @@ import { createClient } from "@/utils/supabase/client";
 import { useCart } from "@/contexts/CartContext";
 import Link from "next/link";
 import { fetchCart } from "../_helpers/fetchCart";
+import { addToOrders } from "./action";
 
 export default function Cart() {
   const supabase = createClient();

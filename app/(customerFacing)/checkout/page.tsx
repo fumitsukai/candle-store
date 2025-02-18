@@ -6,6 +6,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { createClient } from "@/utils/supabase/client";
 import { fetchCart } from "../_helpers/fetchCart";
 import { ProductProps } from "@/lib/types";
+import Image from "next/image";
 
 export default function Checkout() {
   const supabase = createClient();
@@ -14,8 +15,9 @@ export default function Checkout() {
   );
 
   const [loading, setLoading] = useState(false);
-  const [items, setItems] = useState<ProductProps[] | any[]>([]);
+  const [products, setProducts] = useState<ProductProps[] | any[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
+  const [profile, setProfile] = useState<any>(null);
 
   useEffect(() => {
     async function getCartData() {
@@ -37,20 +39,20 @@ export default function Checkout() {
         return;
       }
 
-      setItems(items);
+      setProducts(items);
     }
     getCartData();
   }, [supabase]);
 
   // Handler function for checkout process
   async function handleCheckout() {
-    if (!userId || items.length === 0) return;
+    if (!userId || products.length === 0) return;
     setLoading(true);
     try {
       const res = await fetch("/api/checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items, userId }),
+        body: JSON.stringify({ products, userId }),
       });
 
       const { sessionId } = await res.json();
@@ -73,9 +75,94 @@ export default function Checkout() {
     }
   }
 
+  async function getAddress(userId: string) {
+    try {
+      if (!userId) throw new Error("Missing user id");
+      //get address from the profile
+      const { data: profileData, error: profileDataError } = await supabase
+        .from("profiles")
+        .select()
+        .eq("id", userId)
+        .single();
+
+      if (!profileData || profileDataError) {
+        console.log("Error retrieving profile", profileDataError);
+        return;
+      }
+      console.log("Fetched profile:", profileData);
+      setProfile(profileData);
+    } catch (error: any) {
+      console.log(error.message);
+    }
+  }
+
+  useEffect(() => {
+    getAddress(userId!);
+  }, [userId]);
+  useEffect(() => {
+    console.log(products);
+  }, [products]);
   return (
-    <Button onClick={handleCheckout} disabled={loading || !items.length}>
-      {loading ? "Processing..." : "PAY BY CARD"}
-    </Button>
+    <>
+      <div className="bg-slate-100 space-y-4">
+        <h1 className="bg-white p-4 font-semibold text-base">CHECKOUT</h1>
+        <div className="p-4 bg-white space-y-4">
+          <div className="flex justify-between">
+            <h3 className="font-semibold">MY CART</h3>
+            <div className="font-extralight">View</div>
+          </div>
+          <div className="flex gap-4">
+            {products.map((product) => (
+              <Image
+                src={product.thumbnail}
+                alt={product.description}
+                width={100}
+                height={100}
+              />
+            ))}
+          </div>
+        </div>
+        <ShowAddress {...profile} />
+        <div className="p-4 space-y-4">
+          <div className="flex justify-between">
+            <div>Total to pay:</div>
+            <div>
+              {Intl.NumberFormat("en-GB", {
+                style: "currency",
+                currency: "GBP",
+              }).format(
+                products.reduce(
+                  (acc, product) => acc + product.price * product.qty,
+                  0
+                ) / 100
+              )}
+            </div>
+          </div>
+          <Button
+            onClick={handleCheckout}
+            disabled={loading || !products.length}
+            className="w-full"
+          >
+            {loading ? "Processing..." : "BUY NOW"}
+          </Button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function ShowAddress(props: any) {
+  return (
+    <div className="bg-white p-4">
+      <h3 className="font-bold">DELIVERY ADDRESS</h3>
+      <div className="flex">
+        <div>{props.firstname}</div>
+        <div>{props.lastname}</div>
+      </div>
+      <div>{props.address_line_1}</div>
+      <div>{props.city}</div>
+      <div>{props.country}</div>
+      <div>{props.postcode}</div>
+    </div>
   );
 }
