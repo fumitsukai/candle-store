@@ -3,13 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import { FormState, loginSchema } from "@/lib/types";
+import { LoginFormState, loginSchema } from "@/lib/types";
 import { linkAnonymousCartToUser } from "../_helpers/linkAnonCartToUser";
 
 export async function login(
-  state: FormState,
+  state: LoginFormState,
   formData: FormData
-): Promise<FormState> {
+): Promise<LoginFormState> {
   const supabase = createClient();
 
   // get anon user

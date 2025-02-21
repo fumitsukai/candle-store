@@ -1,7 +1,7 @@
 import { LargeNumberLike } from "crypto";
 import { StringValidation, z } from "zod";
 
-export type FormState =
+export type LoginFormState =
   | {
       firstName?: string[];
       lastName?: string[];
@@ -22,7 +22,7 @@ export type ProductProps = {
   category: string;
   tags: string[];
   pictures: string[];
-  qty?: number;
+  qty: number;
   category_id?: number;
 };
 
@@ -102,3 +102,37 @@ export const createProductSchema = z.object({
 export const editProductSchema = createProductSchema.extend({
   thumbnail: imageSchema.optional(),
 });
+
+const ukPostcodeRegex =
+  /^(GIR\s?0AA|(?:[A-PR-UWYZ][0-9]{1,2}|(?:[A-PR-UWYZ][A-HK-Y][0-9]{1,2})|(?:[A-PR-UWYZ][0-9][A-HJKSTUW])|(?:[A-PR-UWYZ][A-HK-Y][0-9][ABEHMNPRVWXY]?))\s?[0-9][ABD-HJLNP-UW-Z]{2})$/i;
+
+const nonEmptyString = z
+  .string()
+  .trim()
+  .min(1, { message: "Must be at least 1 character long" });
+
+// UK postcode validator using the regex above
+const ukPostcodeValidator = z
+  .string()
+  .trim()
+  .min(1, { message: "Postcode is required" })
+  .regex(ukPostcodeRegex, { message: "Invalid UK postcode format" });
+
+export const changeAddressSchema = z.object({
+  address_line_1: nonEmptyString,
+  address_line_2: nonEmptyString.optional(),
+  city: nonEmptyString,
+  country: nonEmptyString,
+  postcode: ukPostcodeValidator,
+});
+
+export type AddressFormData =
+  | {
+      address_line_1?: string;
+      address_line_2?: string;
+      city?: string;
+      country?: string;
+      postcode?: string;
+      message?: string;
+    }
+  | undefined;

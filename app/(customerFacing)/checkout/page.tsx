@@ -7,6 +7,9 @@ import { createClient } from "@/utils/supabase/client";
 import { fetchCart } from "../_helpers/fetchCart";
 import { ProductProps } from "@/lib/types";
 import Image from "next/image";
+import Link from "next/link";
+import { X } from "lucide-react";
+import Header from "@/components/header";
 
 export default function Checkout() {
   const supabase = createClient();
@@ -99,29 +102,11 @@ export default function Checkout() {
   useEffect(() => {
     getAddress(userId!);
   }, [userId]);
-  useEffect(() => {
-    console.log(products);
-  }, [products]);
   return (
     <>
       <div className="bg-slate-100 space-y-4">
-        <h1 className="bg-white p-4 font-semibold text-base">CHECKOUT</h1>
-        <div className="p-4 bg-white space-y-4">
-          <div className="flex justify-between">
-            <h3 className="font-semibold">MY CART</h3>
-            <div className="font-extralight">View</div>
-          </div>
-          <div className="flex gap-4">
-            {products.map((product) => (
-              <Image
-                src={product.thumbnail}
-                alt={product.description}
-                width={100}
-                height={100}
-              />
-            ))}
-          </div>
-        </div>
+        <Header name="CHECKOUT" url="/cart" />
+        <MyCart products={products} />
         <ShowAddress {...profile} />
         <div className="p-4 space-y-4">
           <div className="flex justify-between">
@@ -154,8 +139,16 @@ export default function Checkout() {
 function ShowAddress(props: any) {
   return (
     <div className="bg-white p-4">
-      <h3 className="font-bold">DELIVERY ADDRESS</h3>
-      <div className="flex">
+      <div className="mb-4 flex justify-between items-center">
+        <h3 className="font-bold ">DELIVERY ADDRESS</h3>
+        <Link href="/change-address">
+          {" "}
+          <div className="bg-slate-100 p-1 border text-xs font-light">
+            CHANGE
+          </div>
+        </Link>
+      </div>
+      <div className="flex gap-2">
         <div>{props.firstname}</div>
         <div>{props.lastname}</div>
       </div>
@@ -163,6 +156,38 @@ function ShowAddress(props: any) {
       <div>{props.city}</div>
       <div>{props.country}</div>
       <div>{props.postcode}</div>
+    </div>
+  );
+}
+
+function MyCart({ products }: { products: any }) {
+  return (
+    <div className="p-4 bg-white space-y-4">
+      <div className="flex justify-between">
+        <h3 className="font-semibold">MY CART</h3>
+        <Link href="/cart">
+          <div className="font-extralight">View</div>
+        </Link>
+      </div>
+      <div className="flex gap-4">
+        {products.map((product: ProductProps) => (
+          <div className="relative">
+            <Image
+              src={product.thumbnail}
+              alt={product.description}
+              width={100}
+              height={100}
+            />
+            <div
+              className={`absolute bottom-0 right-0 z-50 text-white hidden ${
+                product?.qty > 1 && "hidden"
+              }`}
+            >
+              x{product.qty}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
