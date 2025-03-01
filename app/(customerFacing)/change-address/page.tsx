@@ -1,4 +1,4 @@
-import Header from "@/components/header";
+import Header from "@/components/header_x";
 import { createClient } from "@/utils/supabase/server";
 import { changeAddress } from "./action";
 import { Input } from "@/components/ui/input";
@@ -25,61 +25,63 @@ export default async function ChangeAddress() {
 
   return (
     <>
-      <Header name="CHANGE ADDRESS" url="/" />
-      <form
-        action={changeAddress.bind(null, user_id)}
-        className="p-4 space-y-1"
-      >
-        <div>
-          <Label htmlFor="address_line_1">Address</Label>
-          <Input
-            name="address_line_1"
-            id="address_line_1"
-            type="text"
-            defaultValue={profileData.address_line_1}
-          />
-        </div>
-        {profileData.address_line_2 && (
-          <div>
+      <div className="bg-slate-100 space-y-4">
+        <Header name="CHANGE ADDRESS" url="/" />
+        <form
+          action={changeAddress.bind(null, user_id)}
+          className="p-4 space-y-4 bg-white"
+        >
+          <div className="space-y-2">
+            <Label htmlFor="address_line_1">ADDRESS</Label>
             <Input
-              name="address_line_2"
-              id="address_line_2"
+              name="address_line_1"
+              id="address_line_1"
               type="text"
-              defaultValue={profileData.address_line_2}
+              defaultValue={profileData.address_line_1}
             />
           </div>
-        )}
-        <div>
-          <Label htmlFor="city">City</Label>
-          <Input
-            name="city"
-            id="city"
-            type="text"
-            defaultValue={profileData.city}
-          />
-        </div>
-        <div>
-          <Label htmlFor="country">Country</Label>
-          <Input
-            name="country"
-            id="country"
-            type="text"
-            defaultValue={profileData.country}
-          />
-        </div>
-        <div>
-          <Label htmlFor="postcode">Postcode</Label>
-          <Input
-            name="postcode"
-            id="postcode"
-            type="text"
-            defaultValue={profileData.postcode}
-          />
-        </div>
-        <Button type="submit" className="w-full">
-          Submit
-        </Button>
-      </form>
+          {profileData.address_line_2 && (
+            <div className="space-y-2">
+              <Input
+                name="address_line_2"
+                id="address_line_2"
+                type="text"
+                defaultValue={profileData.address_line_2}
+              />
+            </div>
+          )}
+          <div className="space-y-2">
+            <Label htmlFor="city">CITY</Label>
+            <Input
+              name="city"
+              id="city"
+              type="text"
+              defaultValue={profileData.city}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="country">COUNTRY</Label>
+            <Input
+              name="country"
+              id="country"
+              type="text"
+              defaultValue={profileData.country}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="postcode">POSTCODE</Label>
+            <Input
+              name="postcode"
+              id="postcode"
+              type="text"
+              defaultValue={profileData.postcode}
+            />
+          </div>
+          <Button type="submit" className="w-full">
+            Submit
+          </Button>
+        </form>
+      </div>
     </>
   );
 }

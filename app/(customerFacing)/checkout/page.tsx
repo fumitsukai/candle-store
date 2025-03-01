@@ -9,7 +9,7 @@ import { ProductProps } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
 import { X } from "lucide-react";
-import Header from "@/components/header";
+import Header from "@/components/header_x";
 
 export default function Checkout() {
   const supabase = createClient();

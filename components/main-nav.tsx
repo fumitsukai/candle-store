@@ -33,7 +33,7 @@ export default function MainNav() {
   return isDesktop ? (
     <div>DESKTOP</div>
   ) : (
-    <div className="flex items-center h-10 py-6 justify-between sticky top-0 bg-white px-3 z-50 overflow-hidden">
+    <div className="flex items-center h-10 py-6 justify-between sticky top-0 bg-white px-2 z-50 overflow-hidden">
       <Drawer direction="left">
         <DrawerTrigger className="p-1">
           <AlignJustify

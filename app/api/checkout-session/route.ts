@@ -5,10 +5,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
 export async function POST(req: Request) {
   try {
-    const { items, userId } = await req.json();
+    const { products, userId } = await req.json();
 
     // Convert items to Stripe format
-    const lineItems = items.map((item: any) => ({
+    const lineItems = products.map((item: any) => ({
       price_data: {
         currency: "GBP",
         product_data: {
@@ -31,6 +31,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ sessionId: session.id });
   } catch (error) {
+    console.log(error);
     return NextResponse.json(
       { error: "Error creating Stripe session" },
       { status: 500 }

@@ -42,7 +42,16 @@ export type OrderProps = {
   user_id: string;
   qty: number;
   status: string;
-  detailedProducts?: any;
+  order_items: OrderItem[];
+};
+
+export type OrderItem = {
+  order_item_id: number;
+  order_id: string;
+  product_id: number;
+  quantity: number;
+  price: number;
+  products: ProductProps;
 };
 
 export const loginSchema = z.object({

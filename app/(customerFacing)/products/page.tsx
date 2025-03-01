@@ -1,4 +1,4 @@
-import Header from "@/components/header";
+import Header from "@/components/header_x";
 import ProductCard from "@/components/product-card";
 import { createClient } from "@/utils/supabase/server";
 
