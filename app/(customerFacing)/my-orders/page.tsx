@@ -41,7 +41,6 @@ async function getOrders(id: string) {
 }
 
 function OrderCard(props: OrderProps) {
-  console.log("Props are", props.order_items[0]);
   var date = new Date(props.created_at);
   return (
     <Link href={`${props.id}/order-detail`} className="block">

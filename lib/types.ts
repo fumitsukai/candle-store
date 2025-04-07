@@ -41,6 +41,7 @@ export type OrderProps = {
   total: number;
   user_id: string;
   qty: number;
+  quantity: number;
   status: string;
   order_items: OrderItem[];
 };
