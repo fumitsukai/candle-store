@@ -77,7 +77,7 @@ export default function Layout({
       <CartProvider>
         <div className="flex flex-col min-h-screen text-sm">
           <MainNav />
-          <div className="space-y-2 flex-1">{children}</div>
+          <div className="space-y-4 flex-1">{children}</div>
           <Footer />
         </div>
       </CartProvider>

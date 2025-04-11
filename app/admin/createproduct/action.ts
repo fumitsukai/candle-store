@@ -24,7 +24,7 @@ export async function addProduct(formData: FormData) {
   }`;
   await fs.writeFile(
     `public${thumbnailPath}`,
-    Buffer.from(await data.thumbnail.arrayBuffer())
+    Buffer.from(await data.thumbnail.arrayBuffer()) as Uint8Array
   );
 
   const { error } = await supabase.from("products").insert({

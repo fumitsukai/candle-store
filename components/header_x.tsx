@@ -9,10 +9,10 @@ export default function HeaderExit({
   url: string;
 }) {
   return (
-    <div className="bg-white p-4 font-semibold text-base flex justify-between">
+    <div className="bg-white px-4 py-2 font-semibold text-base flex justify-between">
       <h1>{name}</h1>
       <Link href={url}>
-        <X size={20} />
+        <X size={20} className="p-2" />
       </Link>
     </div>
   );

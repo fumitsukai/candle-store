@@ -24,12 +24,12 @@ export async function updateProduct(id: number, formData: FormData) {
 
   let thumbnailPath = product![0].thumbnail;
   if (data.thumbnail != null && data.thumbnail.size > 0) {
-    await fs.unlink(product![0].thumbnail);
+    await fs.unlink(`public${product![0].thumbnail}`);
     await fs.mkdir("public/products", { recursive: true });
     thumbnailPath = `/products/${crypto.randomUUID()}-${data.thumbnail.name}`;
     await fs.writeFile(
       `public${thumbnailPath}`,
-      Buffer.from(await data.thumbnail.arrayBuffer())
+      Buffer.from(await data.thumbnail.arrayBuffer()) as Uint8Array
     );
   }
 

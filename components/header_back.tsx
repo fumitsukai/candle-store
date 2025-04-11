@@ -9,12 +9,11 @@ export default function HeaderBack({
   url: string;
 }) {
   return (
-    <div className="flex items-center justify-between p-2 bg-white text-base font-semibold">
-      <Link href={url}>
-        <ArrowLeft size={20} />
+    <div className="relative flex items-center justify-center h-14 px-4 bg-lightkeeper-white text-base  uppercase tracking-wide font-medium">
+      <Link href={url} className="p-2 absolute left-4">
+        <ArrowLeft size={24} />
       </Link>
       <div>{name}</div>
-      <div className="w-5"></div>
     </div>
   );
 }

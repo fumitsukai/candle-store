@@ -33,9 +33,18 @@ export default {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
       colors: {
-        anti: "#EFF1F3",
-        raisin: "#272727",
-        moonstone: "#21A0A0",
+        lightkeeper: {
+          white: "#FFFFFF",
+          black: "#0D0D0D", // Slightly off-black for softer feel
+          gray: "#7D7D7D", // Neutral gray for secondary text
+          lightgray: "#F4F4F4", // Section backgrounds, dividers
+          darkgray: "#1A1A1A", // Rich black alternative
+        },
+      },
+      fontFamily: {
+        heading: ["var(--font-tenor)", "serif"],
+        body: ["var(--font-work-sans)", "sans-serif"],
+        poppins: ["var(--font-poppins)", "sans-serif"],
       },
     },
   },

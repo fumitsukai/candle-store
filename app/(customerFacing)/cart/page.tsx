@@ -55,7 +55,7 @@ export default function Cart() {
   }, [supabase]);
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 px-4 py-2">
       <Checkout checkoutTotal={checkoutTotal} />
       {data.map((item, index) => (
         <CartCard key={index} {...item} qty={item.qty} />
@@ -86,7 +86,7 @@ function CartCard({ name, thumbnail, price, qty }: ProductProps) {
 
 function Checkout({ checkoutTotal }: { checkoutTotal: number }) {
   return (
-    <div className="flex justify-between items-center py-5 px-2 border m-1">
+    <div className="flex justify-between bg-lightkeeper-white items-center p-4 border border-lightkeeper-lightgray">
       <div className="flex gap-2">
         <h3>Total:</h3>
         <p>

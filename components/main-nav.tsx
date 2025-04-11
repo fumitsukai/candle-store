@@ -4,7 +4,7 @@ import { useMediaQuery } from "../hooks/use-media-query";
 import { Drawer, DrawerTrigger, DrawerContent, DrawerClose } from "./ui/drawer";
 import { AlignJustify, UserRound, ShoppingBag, Heart } from "lucide-react";
 import Image from "next/image";
-import Logo from "@/public/img/Untitled.png";
+import Logo from "@/public/img/logogpt3.png";
 import { useContext, useEffect, useState } from "react";
 import {
   DropdownMenu,
@@ -33,29 +33,33 @@ export default function MainNav() {
   return isDesktop ? (
     <div>DESKTOP</div>
   ) : (
-    <div className="flex items-center h-10 py-6 justify-between sticky top-0 bg-white px-2 z-50 overflow-hidden">
-      <Drawer direction="left">
-        <DrawerTrigger className="p-1">
-          <AlignJustify
-            className="dark:text-linen text-raisinBlack"
-            size={20}
-          />
-        </DrawerTrigger>
-        <DrawerContent className="text-center">
-          <DrawerClose asChild>
-            <Link href="/products">
-              <button className="font-semibold text-xl mb-3">CANDLES</button>
-            </Link>
-          </DrawerClose>
-        </DrawerContent>
-      </Drawer>
-      <Link href="/" className="ps-14 justify-self-start">
-        <Image src={Logo} alt="Logo" width={130} height={50}></Image>
-      </Link>
-      <div className="flex float-end gap-3">
+    <div className="flex items-center h-16 py-6 justify-between bg-lightkeeper-white sticky top-0 px-4 z-50 overflow-hidden">
+      <div className="basis-1/3">
+        <Drawer direction="left">
+          <DrawerTrigger className="p-2">
+            <AlignJustify
+              className="dark:text-linen text-raisinBlack"
+              size={24}
+            />
+          </DrawerTrigger>
+          <DrawerContent className="text-center">
+            <DrawerClose asChild>
+              <Link href="/products">
+                <button className="font-semibold text-xl mb-3">CANDLES</button>
+              </Link>
+            </DrawerClose>
+          </DrawerContent>
+        </Drawer>
+      </div>
+      <div className="absolute left-1/2 transform -translate-x-1/2">
+        <Link href="/">
+          <Image src={Logo} alt="Logo" width={160} height={48}></Image>
+        </Link>
+      </div>
+      <div className="flex gap-4 items-center z-40">
         <DropdownMenu>
-          <DropdownMenuTrigger className="p-1">
-            <UserRound size={20} />
+          <DropdownMenuTrigger className="p-2 rounded-full hover:bg-gray-100 transition">
+            <UserRound size={24} />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             {!user ? (
@@ -72,17 +76,17 @@ export default function MainNav() {
             </Link>
           </DropdownMenuContent>
         </DropdownMenu>
-        <button className="p-1">
-          <Heart size={20} />
-        </button>
+        {/* <button className="p-2 rounded-full hover:bg-gray-100 transition">
+          <Heart size={25} />
+        </button> */}
         <Link href="/cart">
-          <div className="relative p-1">
+          <div className="relative p-2 rounded-full hover:bg-gray-100 transition">
             {qty > 0 && (
-              <div className="absolute text-[8px] w-3 h-3 text-white bg-slate-900 rounded-full items-center right-0 bottom-0 flex justify-center">
+              <div className="absolute text-[10px] w-4 h-4 text-white bg-slate-900 rounded-full items-center right-0 bottom-0 flex justify-center">
                 {qty}
               </div>
             )}
-            <ShoppingBag size={20} />
+            <ShoppingBag size={24} />
           </div>
         </Link>
       </div>

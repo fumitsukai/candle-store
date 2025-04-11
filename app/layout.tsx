@@ -1,8 +1,26 @@
 import type { Metadata } from "next";
-import { Noto_Sans } from "next/font/google";
+import {
+  Crimson_Text,
+  Plus_Jakarta_Sans,
+  Poppins,
+  DM_Serif_Display,
+} from "next/font/google";
 import "./globals.css";
 
-const noto = Noto_Sans({ subsets: ["latin"] });
+const tenor = DM_Serif_Display({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-tenor",
+});
+const workSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-work-sans",
+});
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["300", "400", "500"],
+  variable: "--font-poppins",
+});
 
 export const metadata: Metadata = {
   title: "Candle Store",
@@ -15,8 +33,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={noto.className}>{children}</body>
+    <html
+      lang="en"
+      className={`${tenor.variable} ${workSans.variable} ${poppins.variable}`}
+    >
+      <body className="font-body bg-lightkeeper-lightgray text-lightkeeper-charcoal">
+        {children}
+      </body>
     </html>
   );
 }

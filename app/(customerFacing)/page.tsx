@@ -32,12 +32,8 @@ export default async function Home() {
   return (
     <>
       <Hero />
-      <div>
-        <ProductGrid productFetcher={getNewIn} title="New In" />
-      </div>
-      <div>
-        <ProductGrid productFetcher={getBestsellers} title="Bestsellers" />
-      </div>
+      <ProductGrid productFetcher={getNewIn} title="New In" />
+      <ProductGrid productFetcher={getBestsellers} title="Bestsellers" />
       <WhyUs />
     </>
   );
@@ -52,7 +48,9 @@ async function ProductGrid({ productFetcher, title }: ProductGridProps) {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-2xl">{title}</h2>
+        <h2 className="text-2xl tracking-wide text-lightkeeper-black font-medium px-4 py-2">
+          {title}
+        </h2>
       </div>
       <div className="grid grid-cols-2 gap-1">
         {(await productFetcher())?.map((product) => (
