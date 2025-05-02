@@ -55,6 +55,12 @@ export type OrderItem = {
   products: ProductProps;
 };
 
+export type UserProps = {
+  id: string;
+  is_anonymous: boolean;
+  user_metadata: any;
+} | null;
+
 export const loginSchema = z.object({
   email: z
     .string()

@@ -20,7 +20,6 @@ export default function Cart() {
   const supabase = createClient();
   const [data, setData] = useState<ProductProps[] | any[]>([]);
   const [checkoutTotal, setCheckoutTotal] = useState<number>(0);
-  const { fetchCartQty } = useCart();
 
   useEffect(() => {
     let isMounted = true;

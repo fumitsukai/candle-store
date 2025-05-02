@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic"; // ← ensure no layout caching
 import Hero from "@/components/hero";
 import ProductCard from "@/components/product-card";
 import WhyUs from "@/components/why-us";

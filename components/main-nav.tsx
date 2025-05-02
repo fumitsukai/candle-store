@@ -5,30 +5,18 @@ import { Drawer, DrawerTrigger, DrawerContent, DrawerClose } from "./ui/drawer";
 import { AlignJustify, UserRound, ShoppingBag, Heart } from "lucide-react";
 import Image from "next/image";
 import Logo from "@/public/img/logogpt3.png";
-import { useContext, useEffect, useState } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { createClient } from "@/utils/supabase/client";
-import { SessionContext } from "@/app/(customerFacing)/layout";
+import { useContext, useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
+import { SessionContext } from "./session_provider";
 
 export default function MainNav() {
-  const supabase = createClient();
   const user = useContext(SessionContext);
-  const { qty, fetchCartQty } = useCart();
+  const { qty } = useCart();
+  useEffect(() => {
+    console.log("user:", user);
+    console.log("qty", qty);
+  }, [user, qty]);
 
-  const handleSignOut = async () => {
-    const { error } = await supabase.auth.signOut();
-
-    if (error) {
-      console.error("Error signing out:", error.message);
-    }
-    fetchCartQty();
-  };
   const isDesktop = useMediaQuery("min-width:768px");
   return isDesktop ? (
     <div>DESKTOP</div>
@@ -37,10 +25,7 @@ export default function MainNav() {
       <div className="basis-1/3">
         <Drawer direction="left">
           <DrawerTrigger className="p-2">
-            <AlignJustify
-              className="dark:text-linen text-raisinBlack"
-              size={24}
-            />
+            <AlignJustify size={24} />
           </DrawerTrigger>
           <DrawerContent className="text-center">
             <DrawerClose asChild>
@@ -57,25 +42,15 @@ export default function MainNav() {
         </Link>
       </div>
       <div className="flex gap-4 items-center z-40">
-        <DropdownMenu>
-          <DropdownMenuTrigger className="p-2 rounded-full hover:bg-gray-100 transition">
+        <Link
+          href={
+            !user || user.is_anonymous === true ? "/login" : "/view-profile"
+          }
+        >
+          <button className="p-2 rounded-full hover:bg-gray-100 transition">
             <UserRound size={24} />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            {!user ? (
-              <Link href="/login">
-                <DropdownMenuItem>Sign In</DropdownMenuItem>
-              </Link>
-            ) : (
-              <DropdownMenuItem onClick={handleSignOut}>
-                Sign Out
-              </DropdownMenuItem>
-            )}
-            <Link href="/view-profile">
-              <DropdownMenuItem>View Profile</DropdownMenuItem>
-            </Link>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          </button>
+        </Link>
         {/* <button className="p-2 rounded-full hover:bg-gray-100 transition">
           <Heart size={25} />
         </button> */}

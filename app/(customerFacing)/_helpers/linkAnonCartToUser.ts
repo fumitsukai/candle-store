@@ -24,6 +24,4 @@ export async function linkAnonymousCartToUser(
   } else {
     console.log("Migration succesful");
   }
-
-  redirect("/cart");
 }

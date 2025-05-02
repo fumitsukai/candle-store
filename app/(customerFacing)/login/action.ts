@@ -33,7 +33,5 @@ export async function login(
   if (anonymousUserId) {
     await linkAnonymousCartToUser(anonymousUserId, user.user.id);
   }
-
-  // revalidatePath("/", "layout");
-  redirect("/?auth_redirect=true");
+  redirect("/view-profile");
 }
