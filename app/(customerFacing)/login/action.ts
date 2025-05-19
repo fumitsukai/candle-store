@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { LoginFormState, loginSchema } from "@/lib/types";
@@ -11,6 +10,8 @@ export async function login(
   formData: FormData
 ): Promise<LoginFormState> {
   const supabase = createClient();
+
+  const redirectTo = formData.get("redirectTo")?.toString() || "/view-profile";
 
   // get anon user
 
@@ -33,5 +34,5 @@ export async function login(
   if (anonymousUserId) {
     await linkAnonymousCartToUser(anonymousUserId, user.user.id);
   }
-  redirect("/view-profile");
+  redirect(redirectTo);
 }

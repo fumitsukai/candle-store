@@ -6,14 +6,18 @@ import { login } from "./action";
 import { useFormState } from "react-dom";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 export default function Login() {
+  const params = useSearchParams();
+  const redirectTo = params.get("redirect") ?? "/view-profile";
   const [error, dispatch] = useFormState(login, {});
   return (
     <form
       className="flex flex-col mx-2 mt-4 border shadow-md p-5 space-y-2 rounded-md"
       action={dispatch}
     >
+      <input type="hidden" name="redirectTo" value={redirectTo} />
       <div>
         <Label htmlFor="email">Email</Label>
         <Input type="email" id="email" name="email" />

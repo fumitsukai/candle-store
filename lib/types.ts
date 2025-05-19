@@ -1,6 +1,16 @@
 import { LargeNumberLike } from "crypto";
 import { StringValidation, z } from "zod";
 
+export type ChangePasswordFormState =
+  | {
+      old_password?: string[];
+      new_password?: string[];
+      confirm_new_password?: string[];
+      message?: string;
+      code?: string;
+    }
+  | undefined;
+
 export type LoginFormState =
   | {
       firstName?: string[];
@@ -60,6 +70,15 @@ export type UserProps = {
   is_anonymous: boolean;
   user_metadata: any;
 } | null;
+
+export const changePasswordSchema = z.object({
+  old_password: z.string().min(1, { message: "Password is required" }).trim(),
+  new_password: z.string().min(1, { message: "Password is required" }).trim(),
+  confirm_new_password: z
+    .string()
+    .min(1, { message: "Password is required" })
+    .trim(),
+});
 
 export const loginSchema = z.object({
   email: z

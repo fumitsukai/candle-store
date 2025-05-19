@@ -29,6 +29,13 @@ export default function MyAccountPanel() {
     router.replace("/login");
   };
 
+  const menuItems = [
+    { href: "/my-orders", icon: PackageCheck, label: "My Orders" },
+    { href: "/my-returns", icon: PackageMinus, label: "My Returns" },
+    { href: "/change-password", icon: Lock, label: "Change Password" },
+    { href: "/change-address", icon: House, label: "Change Address" },
+  ];
+
   return (
     <div className="bg-lightkeeper-white">
       <div className="relative flex items-center justify-center h-14 px-4 mb-4">
@@ -48,19 +55,14 @@ export default function MyAccountPanel() {
           </p>
         </div>
         <div className="flex flex-col items-center">
-          {[
-            { href: "/my-orders", icon: PackageCheck, label: "My Orders" },
-            { href: "/my-returns", icon: PackageMinus, label: "My Returns" },
-            { href: "/change-password", icon: Lock, label: "Change Password" },
-            { href: "/change-address", icon: House, label: "Change Address" },
-          ].map(({ href, icon: Icon, label }) => (
+          {menuItems.map(({ href, icon: Icon, label }) => (
             <Link
               key={href}
               href={href}
-              className="w-full flex items-center px-4 gap-4"
+              className="group w-full flex items-center px-4 gap-4"
             >
               <Icon size={24} />
-              <div className="border-b p-4 w-full flex justify-between">
+              <div className="border-b w-full flex justify-between p-4 group-last:border-b-0">
                 <span>{label}</span>
                 <ChevronRight size={20} />
               </div>

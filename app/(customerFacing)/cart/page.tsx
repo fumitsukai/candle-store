@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ProductProps } from "@/lib/types";
 import {
   Card,
@@ -11,53 +12,52 @@ import {
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
-import { useCart } from "@/contexts/CartContext";
-import Link from "next/link";
 import { fetchCart } from "../_helpers/fetchCart";
-import { addToOrders } from "./action";
 
 export default function Cart() {
   const supabase = createClient();
-  const [data, setData] = useState<ProductProps[] | any[]>([]);
+  const [data, setData] = useState<ProductProps[]>([]);
   const [checkoutTotal, setCheckoutTotal] = useState<number>(0);
+  const [user, setUser] = useState<any>(null);
 
+  // 1) grab the user
   useEffect(() => {
     let isMounted = true;
-
-    async function getCartData() {
-      // Get authenticated user
-      const { data: user, error: userError } = await supabase.auth.getUser();
-      if (userError || !user?.user) return;
-
-      console.log("Fetching cart for user id", user.user.id);
-
-      // Fetch cart items from the database
-      const { items, error } = await fetchCart(supabase, user.user.id);
-      if (error) {
-        console.log("Failed fetching cart items:", error);
-        return;
-      }
-
+    supabase.auth.getUser().then(({ data: u, error }) => {
       if (isMounted) {
-        setData(items);
-        setCheckoutTotal(
-          items.reduce((acc, product) => acc + product.price * product.qty, 0)
-        );
+        setUser(u?.user ?? null);
       }
-    }
-
-    getCartData();
-
+    });
     return () => {
       isMounted = false;
     };
   }, [supabase]);
 
+  // 2) fetch cart only if logged in
+  useEffect(() => {
+    if (!user) {
+      setData([]);
+      setCheckoutTotal(0);
+      return;
+    }
+    let isMounted = true;
+    fetchCart(supabase, user.id).then(({ items, error }) => {
+      if (error) return console.error(error);
+      if (isMounted) {
+        setData(items);
+        setCheckoutTotal(items.reduce((sum, p) => sum + p.price * p.qty, 0));
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [supabase, user]);
+
   return (
     <div className="space-y-2 px-4 py-2">
-      <Checkout checkoutTotal={checkoutTotal} />
-      {data.map((item, index) => (
-        <CartCard key={index} {...item} qty={item.qty} />
+      <Checkout checkoutTotal={checkoutTotal} user={user} />
+      {data.map((item, i) => (
+        <CartCard key={i} {...item} qty={item.qty} />
       ))}
     </div>
   );
@@ -75,15 +75,29 @@ function CartCard({ name, thumbnail, price, qty }: ProductProps) {
           }).format(price / 100)}
         </CardTitle>
         <CardDescription className="text-black">{name}</CardDescription>
-        <p>
-          Qty<span>{qty}</span>
-        </p>
+        <p>Qty: {qty}</p>
       </CardHeader>
     </Card>
   );
 }
 
-function Checkout({ checkoutTotal }: { checkoutTotal: number }) {
+interface CheckoutProps {
+  checkoutTotal: number;
+  user: any; // or your typed User | null
+}
+
+function Checkout({ checkoutTotal, user }: CheckoutProps) {
+  const router = useRouter();
+
+  const handleClick = () => {
+    if (!user || user.is_anonymous === true) {
+      // send them to login, then back to checkout after
+      router.push(`/login?redirect=/checkout`);
+    } else {
+      router.push("/checkout");
+    }
+  };
+
   return (
     <div className="flex justify-between bg-lightkeeper-white items-center p-4 border border-lightkeeper-lightgray">
       <div className="flex gap-2">
@@ -95,9 +109,7 @@ function Checkout({ checkoutTotal }: { checkoutTotal: number }) {
           }).format(checkoutTotal / 100)}
         </p>
       </div>
-      <Link href="/checkout">
-        <Button>CHECKOUT</Button>
-      </Link>
+      <Button onClick={handleClick}>CHECKOUT</Button>
     </div>
   );
 }
